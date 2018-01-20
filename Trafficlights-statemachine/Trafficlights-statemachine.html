@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+    *{padding: 0;margin: 0}
+    div{width: 100px;height: 100px}
+    .red{
+        background-color: red;
+    }
+    .yellow{
+        background-color: yellow;
+    }
+    .green{
+        background-color: green;
+    }
+    .RGBHEX{
+        background-color: #202020;
+    }
+    div{
+        background-color: #202020;
+    }
+    </style>
+</head>
+<body>
+        <div class="red" id="red"></div>
+        <div class="yellow" id="yellow"></div>
+        <div class="green" id="green"></div>
+</body>
+<script src="./jquery.min.js"></script>
+<script src="./state-machine.min.js"></script>
+<script>
+
+        /* var divElements = document.querySelectorAll('div');
+        for (var i = 0; i < divElements.length; i++) {
+            divElements[i].setAttribute('class', 'RGBHEX')
+
+            console.log(divElements[i].className);
+        }; */
+    (function () {
+        
+        var divElements = document.querySelectorAll('div');
+        var redElet = document.querySelector('#red');
+        var yellowElet = document.querySelector('#yellow');
+        var greenElet = document.querySelector('#green');
+        var fsm = new StateMachine({
+            init:'red',
+            transitions:[
+                {name:'stop', from:'yellow',to:'red'},
+                {name:'go', from:'yellow',to:'green'},
+                {name:'warn', from:['red','green'],to:'yellow'},
+            ],
+            methods:{
+                onEnterRed:function(){
+                    redElet.setAttribute('class','red');
+                },
+                onStop:function(lifecycle){
+                    yellowElet.setAttribute('class','RGBHEX');
+                    redElet.setAttribute('class','red');
+                    console.log('执行了onStop');
+                    console.log(fsm.state);
+                },
+                onWarn:function(lifecycle){
+                    redElet.setAttribute('class','RGBHEX');
+                    greenElet.setAttribute('class','RGBHEX');
+                    yellowElet.setAttribute('class','yellow');
+                    console.log('执行了onWarn');
+                    console.log(fsm.state);
+                },
+                onGo:function(lifecycle){
+                    yellowElet.setAttribute('class','RGBHEX');
+                    greenElet.setAttribute('class','green');
+                    
+                    console.log('执行了onGo');
+                    console.log(fsm.state);
+                }
+            }
+        })
+       var Y=true;
+       var dengTime = [2000,2000,2000];
+        (function iterator(i) {
+          if (i == dengTime.length) {
+              i=0;
+            }
+            var staks = function () {
+                if (fsm.state == 'red'||fsm.state == 'green') {
+                    fsm.warn();
+                } else 
+                    {
+                        if(Y){
+                            fsm[fsm.transitions()[0]]();
+                            Y=false;
+                        } else {
+                            fsm[fsm.transitions()[1]]();
+                            Y=true;
+                        };
+                   /*  if (i == 2) {
+                        fsm[fsm.transitions()[1]]();
+                    } else {
+                        fsm[fsm.transitions()[i]]();
+                    } */
+                }
+                
+                //console.log('执行完毕'+i);
+                iterator(i+1);
+            }
+            setTimeout(staks,dengTime[i]);
+        })(0);
+       /*  var dengTime = [2000,2000,2000];
+        var wait = function (time) {
+            var tasks = function () {
+              console.log('执行完毕！');
+            }
+            setTimeout(tasks, time)
+        }
+        for (var i=0; i < dengTime.length; i++){
+            wait(dengTime[i]);
+        };
+         */
+      /*   while (true) {
+        var wait = function (time) {
+            var tasks = function () {
+              console.log('执行完毕！');
+            }
+            setTimeout(tasks, time)
+        }
+        } */
+    
+    })()
+</script>
+</html>
